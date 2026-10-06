@@ -1,6 +1,6 @@
 packages:
   - web
-  - examples/samryetha-client
-  - packages/*
+onlyBuiltDependencies:
+  - "@lako/ui"
 allowBuilds:
   sharp: set this to true or false

@@ -9,7 +9,7 @@ Lako runs as two plain processes (api + web), same as the forum.
 
 ```bash
 git clone <repository>
-cd Samryetha/lako
+cd Lako
 cp api/.env.example api/.env
 cd api && uv sync && uv run alembic upgrade head && uv run python -m app.cli seed
 ```
@@ -18,10 +18,10 @@ Then, in two more terminals:
 
 ```bash
 # 1. api (port 8000)
-cd lako/api && uv run uvicorn app.main:app --port 8000
+cd Lako/api && uv run uvicorn app.main:app --port 8000
 
 # 2. web — 别用默认的 3000，那是论坛前端的端口
-cd lako && pnpm install && pnpm --dir packages/ui build
+cd Lako && pnpm install
 cd web && LAKO_API_INTERNAL_URL=http://localhost:8000 pnpm exec next dev -p 4010
 ```
 
@@ -33,10 +33,10 @@ Then:
 
 `alembic upgrade head` + `python -m app.cli seed` must run before the API starts. The seed is idempotent and registers public PKCE client `samryetha` with `http://localhost:4000/auth/callback` and the requested `http://localhost:3000/auth/callback` development URI.
 
-> `pnpm --dir packages/ui build` is not optional: `@lako/ui` is a TS source package and
-> `web` imports its compiled `dist/`. Skipping it fails at build time with module-not-found.
+> `@lako/ui` is maintained in `Samryetha-Development/lako-ui` and pinned by commit in
+> `web/package.json`. Installing the Git dependency builds its distributable files.
 
-For production, `Samryetha/deploy.sh` provisions Lako alongside the forum — pm2 + nginx,
+For production, deploy Lako independently from the forum — pm2 + nginx,
 an `auth.<domain>` vhost, generated secrets (JWT key, client secret, encryption key),
 and an idempotent database bootstrap. There is no Docker path.
 
@@ -51,7 +51,6 @@ uv run python -m app.cli seed
 uv run uvicorn app.main:app --reload --port 8000
 
 cd ../web && pnpm install && pnpm dev
-cd ../examples/samryetha-client && pnpm install && pnpm dev
 ```
 
 Run checks with `make test` and `make build`, or run each command directly on Windows.
