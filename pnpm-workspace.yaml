@@ -1,5 +1,6 @@
 packages:
   - web
+  - examples/samryetha-client
 onlyBuiltDependencies:
   - "@lako/ui"
 allowBuilds:
