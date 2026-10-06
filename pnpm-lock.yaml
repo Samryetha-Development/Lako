@@ -39,8 +39,8 @@ importers:
   web:
     dependencies:
       '@lako/ui':
-        specifier: github:Samryetha-Development/lako-ui#ab6cdcb45d21e6649365fb64501a5cf10e2a654f
-        version: https://codeload.github.com/Samryetha-Development/lako-ui/tar.gz/ab6cdcb45d21e6649365fb64501a5cf10e2a654f(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        specifier: github:Samryetha-Development/lako-ui#cc4f00bb09591f8c53f2e1396e3cf9b0795b5ffd
+        version: https://codeload.github.com/Samryetha-Development/lako-ui/tar.gz/cc4f00bb09591f8c53f2e1396e3cf9b0795b5ffd(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       next:
         specifier: 16.3.3
         version: 16.3.3(@types/node@22.20.2)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -231,8 +231,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@lako/ui@https://codeload.github.com/Samryetha-Development/lako-ui/tar.gz/ab6cdcb45d21e6649365fb64501a5cf10e2a654f':
-    resolution: {tarball: https://codeload.github.com/Samryetha-Development/lako-ui/tar.gz/ab6cdcb45d21e6649365fb64501a5cf10e2a654f}
+  '@lako/ui@https://codeload.github.com/Samryetha-Development/lako-ui/tar.gz/cc4f00bb09591f8c53f2e1396e3cf9b0795b5ffd':
+    resolution: {tarball: https://codeload.github.com/Samryetha-Development/lako-ui/tar.gz/cc4f00bb09591f8c53f2e1396e3cf9b0795b5ffd}
     version: 0.1.0
     peerDependencies:
       react: ^19
@@ -529,7 +529,7 @@ snapshots:
   '@img/sharp-win32-x64@0.35.4':
     optional: true
 
-  '@lako/ui@https://codeload.github.com/Samryetha-Development/lako-ui/tar.gz/ab6cdcb45d21e6649365fb64501a5cf10e2a654f(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@lako/ui@https://codeload.github.com/Samryetha-Development/lako-ui/tar.gz/cc4f00bb09591f8c53f2e1396e3cf9b0795b5ffd(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
