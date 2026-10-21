@@ -262,6 +262,10 @@ export default function Security() {
         {notice && !view && <div key={notice.id} className="security-notification" role="alert">{notice.message}</div>}
         <div className="security-list">
           <div className="security-row">
+            <div className="row-main"><strong>Account recovery</strong><div className="subtle">Save 8 one-time codes to reset a forgotten password</div></div>
+            <div className="security-controls"><a className="row-action" href="/account/recovery">Manage codes</a></div>
+          </div>
+          <div className="security-row">
             <div className="row-main">
               <strong>Password</strong>
               <div className="subtle">Used for sign in; changing it signs out other sessions</div>

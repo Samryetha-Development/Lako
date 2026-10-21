@@ -41,5 +41,6 @@ export default function Reset() {
     {done ? <p className="subtle">{done} <a className="auth-link" href="/login">Back to sign in</a></p>
     : token ? <form onSubmit={confirm}><label>New password<input name="password" type="password" autoComplete="new-password" required autoFocus /></label><label>Confirm password<input name="confirm" type="password" autoComplete="new-password" required /></label>{error && <div className="form-error">{error}</div>}<button disabled={busy}>{busy ? "Saving…" : "Set new password"}</button></form>
     : <form onSubmit={request}><label>Username or email<input name="login" autoComplete="username" required autoFocus /></label>{error && <div className="form-error">{error}</div>}<button disabled={busy}>{busy ? "Sending…" : "Send reset link"}</button></form>}
+    <a className="auth-link" href="/recover">Use an account recovery code</a>
   </div></section></main>;
 }

@@ -38,7 +38,7 @@ async def audit(db: AsyncSession, event_type: str, **values: object) -> None:
     db.add(AuditEvent(event_type=event_type, **values))
 
 
-async def register(db: AsyncSession, username: str, email: str, password: str, display_name: str) -> User:
+async def register(db: AsyncSession, username: str, email: str, password: str, display_name: str, *, commit: bool = True) -> User:
     # Strip once at the entry so validation, lookup, and storage all see the
     # same values (otherwise " name " and "name" diverge across flows).
     username = username.strip()
@@ -48,7 +48,7 @@ async def register(db: AsyncSession, username: str, email: str, password: str, d
     email_norm = normalize_email(email)
     if not USERNAME_PATTERN.fullmatch(username):
         raise ApiError(422, "INVALID_USERNAME", "Username must be 3–32 letters, numbers, dots, dashes, or underscores")
-    if "@" not in email_norm:
+    if email_norm and "@" not in email_norm:
         raise ApiError(422, "INVALID_EMAIL", "Enter a valid email address")
     if len(password) < 12 or len(password) > 256:
         raise ApiError(422, "WEAK_PASSWORD", "Password must be at least 12 characters")
@@ -73,21 +73,18 @@ async def register(db: AsyncSession, username: str, email: str, password: str, d
                 normalized_identifier=username_norm,
                 verified=True,
             ),
-            Identity(
-                user_id=user.id,
-                type=IdentityType.EMAIL,
-                identifier=email,
-                normalized_identifier=email_norm,
-                verified=False,
-            ),
             Credential(user_id=user.id, type=CredentialType.PASSWORD, secret_data=hash_password(password)),
         ]
     )
+    if email_norm:
+        db.add(Identity(user_id=user.id, type=IdentityType.EMAIL, identifier=email,
+                        normalized_identifier=email_norm, verified=False))
     member_role = (await db.execute(select(Role).where(Role.name == "samryetha-users"))).scalar_one_or_none()
     if member_role:
         await db.execute(user_roles.insert().values(user_id=user.id, role_id=member_role.id))
     await audit(db, "user.created", actor_user_id=user.id, target_user_id=user.id)
-    await db.commit()
+    if commit:
+        await db.commit()
     return user
 
 

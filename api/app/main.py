@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.admin.routes import router as admin_router
+from app.authentication.account_recovery import router as recovery_router
 from app.authentication.email_routes import router as email_router
 from app.authentication.mfa_routes import router as mfa_router
 from app.authentication.routes import router as authentication_router
@@ -32,6 +33,7 @@ app.add_middleware(
     allow_headers=["Content-Type", "Authorization", "X-CSRF-Token"],
 )
 app.include_router(identity_router)
+app.include_router(recovery_router)
 app.include_router(authentication_router)
 app.include_router(email_router)
 app.include_router(mfa_router)
@@ -39,6 +41,14 @@ app.include_router(webauthn_router)
 app.include_router(admin_router)
 app.include_router(sessions_router)
 app.include_router(oauth_router)
+
+
+@app.middleware("http")
+async def protect_recovery_responses(request, call_next):
+    response = await call_next(request)
+    if request.url.path == "/api/auth/register" or "recovery-code" in request.url.path:
+        response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 @app.get("/health")

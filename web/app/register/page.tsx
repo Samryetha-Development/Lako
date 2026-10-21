@@ -1,4 +1,36 @@
 "use client";
-import {FormEvent,useState} from "react";
-function continuation(){const value=new URLSearchParams(location.search).get("return_to");return value?.startsWith("/oauth/authorize?")?value:null}
-export default function Register(){const[error,setError]=useState("");async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();const d=new FormData(e.currentTarget);const body={username:d.get("username"),email:d.get("email"),display_name:d.get("display_name"),password:d.get("password")};const r=await fetch("/api/auth/register",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});if(r.ok){const next=continuation();location.href=next?`/login?return_to=${encodeURIComponent(next)}`:"/login"}else{const x=await r.json();setError(x.error?.message??"Registration failed")}}return <main><section className="auth-wrap"><div className="panel"><div className="eyebrow">Lako</div><h1>Create account</h1><form onSubmit={submit}><label>Display name<input name="display_name" required /></label><label>Username<input name="username" autoComplete="username" required /></label><label>Email<input name="email" type="email" autoComplete="email" required /></label><label>Password<input name="password" type="password" minLength={12} autoComplete="new-password" required /></label>{error&&<div className="form-error">{error}</div>}<button>Create account</button></form><a className="auth-link" href="/login">Already have an account</a></div></section></main>}
+import { FormEvent, useState } from "react";
+import { RecoveryCodes } from "../recovery-codes";
+
+function loginHref() {
+  const value = new URLSearchParams(location.search).get("return_to");
+  return value?.startsWith("/oauth/authorize?") ? `/login?return_to=${encodeURIComponent(value)}` : "/login";
+}
+
+export default function Register() {
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [codes, setCodes] = useState<string[]>([]);
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); if (busy) return;
+    const data = new FormData(event.currentTarget);
+    if (data.get("password") !== data.get("confirm")) { setError("Passwords do not match."); return; }
+    setBusy(true); setError("");
+    try {
+      const response = await fetch("/api/auth/register", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ username: data.get("username"), password: data.get("password") }) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error?.message ?? "Registration failed");
+      setCodes(result.recovery_codes);
+    } catch (cause) { setError(cause instanceof Error ? cause.message : "Registration failed"); }
+    finally { setBusy(false); }
+  }
+  return <main className="lako-auth lako-auth-main"><section className="lako-auth-login"><div className="lako-auth-panel">
+    <div className="lako-auth-product">Lako</div>
+    {codes.length ? <RecoveryCodes codes={codes} onContinue={() => location.assign(loginHref())} /> : <><h1>Create account</h1><p className="subtle">Choose a username and password. You can sign in immediately.</p>
+      <form onSubmit={submit}><label>Username<input name="username" autoComplete="username" minLength={3} maxLength={32} required disabled={busy} /></label>
+        <label>Password<input name="password" type="password" minLength={12} maxLength={256} autoComplete="new-password" required disabled={busy} /></label>
+        <label>Confirm password<input name="confirm" type="password" autoComplete="new-password" required disabled={busy} /></label>
+        {error && <div className="form-error" role="alert">{error}</div>}<button disabled={busy}>{busy ? "Creating…" : "Create account"}</button></form>
+      <a className="auth-link" href="/login" onClick={event => { event.preventDefault(); location.assign(loginHref()); }}>Already have an account</a></>}
+  </div></section></main>;
+}

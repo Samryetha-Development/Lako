@@ -74,6 +74,14 @@ class Credential(Base):
     enabled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
+class AccountRecoveryCode(Base):
+    __tablename__ = "account_recovery_codes"
+    id: Mapped[uuid.UUID] = uuid_pk()
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    code_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
 class Device(Base):
     __tablename__ = "devices"
     id: Mapped[uuid.UUID] = uuid_pk()
