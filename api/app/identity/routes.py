@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.authentication.service import register
 from app.authentication.account_recovery import replace_codes
+from app.authentication.service import register
 from app.common.client_ip import client_ip
 from app.common.database import get_db
 from app.common.ratelimit import check as check_rate_limit

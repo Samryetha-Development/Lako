@@ -1,8 +1,9 @@
 from sqlalchemy import select
+
+from app.authentication.mfa_service import normalize_recovery_code
 from app.common.database import SessionFactory
 from app.common.models import AccountRecoveryCode, Identity
 from app.security.core import token_hash
-from app.authentication.mfa_service import normalize_recovery_code
 
 
 async def test_username_only_register_and_recover(client):
@@ -48,8 +49,9 @@ async def test_regeneration_requires_password_and_csrf(client, logged_in):
 
 
 async def test_recovery_throttle_and_disabled_account(client, registered):
-    from app.common.models import User, UserStatus
     import uuid
+
+    from app.common.models import User, UserStatus
     async with SessionFactory() as db:
         user = await db.get(User, uuid.UUID(registered["id"]))
         user.status = UserStatus.DISABLED
